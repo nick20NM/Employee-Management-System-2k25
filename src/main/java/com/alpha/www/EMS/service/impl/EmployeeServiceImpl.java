@@ -1,6 +1,7 @@
 package com.alpha.www.EMS.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.alpha.www.EMS.dto.EmployeeDto;
 import com.alpha.www.EMS.entity.Employee;
@@ -21,6 +22,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Employee employee = EmployeeMapper.mapToEmployee(employeeDto);
 		Employee savedEmployee = employeeRepository.save(employee);
 		return EmployeeMapper.mapToEmployeeDto(savedEmployee);
+	}
+
+	@Override
+	public EmployeeDto getEmployeeById(Long employeeId) {
+		Employee employee = employeeRepository
+				.findById(employeeId)
+				.orElseThrow(() -> new ResourceAccessException("Employee not found with id: " + employeeId));
+		return EmployeeMapper.mapToEmployeeDto(employee);
 	}
 
 }

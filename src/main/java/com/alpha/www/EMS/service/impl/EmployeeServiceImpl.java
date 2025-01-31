@@ -8,6 +8,7 @@ import org.springframework.web.client.ResourceAccessException;
 
 import com.alpha.www.EMS.dto.EmployeeDto;
 import com.alpha.www.EMS.entity.Employee;
+import com.alpha.www.EMS.exception.ResourceNotFoundException;
 import com.alpha.www.EMS.mapper.EmployeeMapper;
 import com.alpha.www.EMS.repository.EmployeeRepository;
 import com.alpha.www.EMS.service.EmployeeService;
@@ -41,6 +42,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return employees.stream()
 				.map(employee -> EmployeeMapper.mapToEmployeeDto(employee))
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public EmployeeDto updateEmployee(Long employeeId, EmployeeDto employeeDto) {
+		
+		Employee employee = employeeRepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + employeeId));
+		
+		employee.setFirstName(employeeDto.getFirstName());
+		employee.setLastName(employeeDto.getLastName());
+		employee.setEmail(employeeDto.getEmail());
+		
+		Employee updatedEmployee = employeeRepository.save(employee);
+		
+		return EmployeeMapper.mapToEmployeeDto(updatedEmployee);
 	}
 
 }
